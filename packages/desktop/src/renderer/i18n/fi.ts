@@ -1,0 +1,25 @@
+export const dict = {
+  "desktop.menu.checkForUpdates": "Tarkista päivitykset...",
+  "desktop.menu.installCli": "Asenna CLI...",
+  "desktop.menu.reloadWebview": "Lataa Webview uudelleen",
+  "desktop.menu.restart": "Käynnistä uudelleen",
+  "desktop.dialog.chooseFolder": "Valitse kansio",
+  "desktop.dialog.chooseFile": "Valitse tiedosto",
+  "desktop.dialog.saveFile": "Tallenna tiedosto",
+  "desktop.updater.checkFailed.title": "Päivitystarkistus epäonnistui",
+  "desktop.updater.checkFailed.message": "Päivitysten tarkistaminen epäonnistui",
+  "desktop.updater.none.title": "Päivitystä ei ole saatavilla",
+  "desktop.updater.none.message": "Käytät jo OpenCoden uusinta versiota",
+  "desktop.updater.downloadFailed.title": "Päivitys epäonnistui",
+  "desktop.updater.downloadFailed.message": "Päivityksen lataaminen epäonnistui",
+  "desktop.updater.downloaded.title": "Päivitys ladattu",
+  "desktop.updater.downloaded.prompt":
+    "OpenCoden versio {{version}} on ladattu. Haluatko asentaa sen ja käynnistää sen uudelleen?",
+  "desktop.updater.installFailed.title": "Päivitys epäonnistui",
+  "desktop.updater.installFailed.message": "Päivityksen asentaminen epäonnistui",
+  "desktop.cli.installed.title": "CLI asennettu",
+  "desktop.cli.installed.message":
+    'CLI asennettu osoitteeseen {{path}}\n\nKäynnistä päätelaite uudelleen käyttääksesi "opencode"-komentoa.',
+  "desktop.cli.failed.title": "Asennus epäonnistui",
+  "desktop.cli.failed.message": "CLI:n asennus epäonnistui: {{error}}",
+}

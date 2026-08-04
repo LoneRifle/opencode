@@ -1,0 +1,25 @@
+export const dict = {
+  "desktop.menu.checkForUpdates": "Controleer op updates...",
+  "desktop.menu.installCli": "CLI installeren...",
+  "desktop.menu.reloadWebview": "Webweergave opnieuw laden",
+  "desktop.menu.restart": "Opnieuw opstarten",
+  "desktop.dialog.chooseFolder": "Kies een map",
+  "desktop.dialog.chooseFile": "Kies een bestand",
+  "desktop.dialog.saveFile": "Bestand opslaan",
+  "desktop.updater.checkFailed.title": "Updatecontrole mislukt",
+  "desktop.updater.checkFailed.message": "Kan niet controleren op updates",
+  "desktop.updater.none.title": "Geen update beschikbaar",
+  "desktop.updater.none.message": "Je gebruikt al de nieuwste versie van OpenCode",
+  "desktop.updater.downloadFailed.title": "Update mislukt",
+  "desktop.updater.downloadFailed.message": "Kan de update niet downloaden",
+  "desktop.updater.downloaded.title": "Update gedownload",
+  "desktop.updater.downloaded.prompt":
+    "Versie {{version}} van OpenCode is gedownload. Wil je deze installeren en OpenCode opnieuw starten?",
+  "desktop.updater.installFailed.title": "Update mislukt",
+  "desktop.updater.installFailed.message": "Kan update niet installeren",
+  "desktop.cli.installed.title": "CLI geïnstalleerd",
+  "desktop.cli.installed.message":
+    "CLI geïnstalleerd in {{path}}\n\nStart je terminal opnieuw om de opdracht 'opencode' te gebruiken.",
+  "desktop.cli.failed.title": "Installatie mislukt",
+  "desktop.cli.failed.message": "Kan CLI niet installeren: {{error}}",
+}

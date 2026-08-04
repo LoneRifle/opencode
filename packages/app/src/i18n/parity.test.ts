@@ -18,8 +18,19 @@ const appLocales = [
   "tr",
   "zh",
   "zht",
+  "hi",
+  "nl",
+  "id",
+  "vi",
+  "it",
+  "ur",
+  "pa",
+  "az",
+  "tzm",
+  "fi",
+  "sv",
 ] as const
-const desktopLocales = appLocales.filter((locale) => locale !== "th" && locale !== "tr")
+const desktopLocales = appLocales.filter((locale) => locale !== "th")
 
 const domains = [
   {

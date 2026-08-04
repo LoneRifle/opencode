@@ -189,34 +189,39 @@ export const layer = Layer.effect(
         .map(SystemPart.make)
       const history = toLLMMessages(input.context.messages, resolved.ref, providerMetadataKey)
       const messages = stepLimitReached ? [...history, Message.assistant(MAX_STEPS_PROMPT)] : history
-      const toolDefinitions = tools.definitions
-      const toolsByName = new Map(toolDefinitions.map((tool) => [tool.name, tool]))
-      // Hooks may reshape available definitions but cannot advertise tools omitted by permissions or the Step limit.
-      const contextEvent = yield* hooks.trigger("session", "context", {
+      const registry = new Map(tools.definitions.map((tool) => [tool.name, tool]))
+      // Keyed by the exact objects handed to hooks, so a renamed entry still maps back to its tool.
+      const definitions = new Map(
+        tools.definitions.map(
+          (tool) => [{ description: tool.description, input: { ...tool.inputSchema } }, tool] as const,
+        ),
+      )
+      const context = yield* hooks.trigger("session", "context", {
         sessionID: session.id,
         agent: agent.id,
         model: resolved.ref,
         system,
         messages,
-        tools: Object.fromEntries(
-          toolDefinitions.map((tool) => [tool.name, { description: tool.description, input: { ...tool.inputSchema } }]),
-        ),
+        tools: Object.fromEntries(Array.from(definitions, ([definition, tool]) => [tool.name, definition])),
       })
-      const hookedTools = Object.entries(contextEvent.tools).flatMap(([name, tool]) => {
-        const registered = toolsByName.get(name)
-        return registered
-          ? [{ ...registered, description: tool.description, inputSchema: tool.input }]
-          : []
-      })
+      // Hook-visible name -> tool. `name` stays canonical so execution can translate renamed calls back.
+      // Entries matching no tool were invented by a hook and are dropped.
+      const hooked = new Map(
+        Object.entries(context.tools).flatMap(([name, definition]) => {
+          const tool = registry.get(name) ?? definitions.get(definition)
+          if (!tool) return []
+          return [[name, { ...tool, description: definition.description, inputSchema: definition.input }] as const]
+        }),
+      )
       const request = LLM.request({
         model,
         http: {
           headers: SessionModelHeaders.make(session, app),
         },
         providerOptions: { [providerMetadataKey]: { promptCacheKey } },
-        system: contextEvent.system,
-        messages: boundImages(unsupportedParts(contextEvent.messages, resolved.capabilities)),
-        tools: hookedTools,
+        system: context.system,
+        messages: boundImages(unsupportedParts(context.messages, resolved.capabilities)),
+        tools: Array.from(hooked, ([name, tool]) => ({ ...tool, name })),
         toolChoice: stepLimitReached ? "none" : undefined,
       })
       const options: StreamOptions = {
@@ -256,13 +261,15 @@ export const layer = Layer.effect(
           }),
         )
       }
-      const executeTool: Prepared["executeTool"] = (executeInput) => {
+      const executeTool: Prepared["executeTool"] = (input) => {
         if (stepLimitReached)
           return new Tool.Error({ message: "Tools are disabled after the maximum agent steps" })
-        if (toolsByName.has(executeInput.call.name) && !Object.hasOwn(contextEvent.tools, executeInput.call.name))
-          return new Tool.Error({ message: `Tool is not available for this request: ${executeInput.call.name}` })
+        const tool = hooked.get(input.call.name)
+        // A registered tool absent from the hooked set was removed or renamed by a hook.
+        if (!tool && registry.has(input.call.name))
+          return new Tool.Error({ message: `Tool is not available for this request: ${input.call.name}` })
         return tools
-          .execute(executeInput)
+          .execute(tool ? { ...input, call: { ...input.call, name: tool.name } } : input)
           .pipe(Effect.catchCauseFilter(declineDefect, (decline) => Effect.fail(decline)))
       }
       return {
